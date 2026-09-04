@@ -36,6 +36,7 @@ import AdminNewsPage from './app/admin/news/page';
 import AdminOfficeHoursPage from './app/admin/office-hours/page';
 import AdminPartnersPage from './app/admin/partners/page';
 import AdminPaymentNumbersPage from './app/admin/payment-numbers/page';
+import AdminBankDetailsPage from './app/admin/bank-details/page';
 import AdminProgramsPage from './app/admin/programs/page';
 import AdminProgramSponsorsPage from './app/admin/program-sponsors/page';
 import AdminSettingsPage from './app/admin/settings/page';
@@ -90,6 +91,7 @@ function App() {
         <Route path="/admin/office-hours" element={<AdminLayout><AdminOfficeHoursPage /></AdminLayout>} />
         <Route path="/admin/donations" element={<AdminLayout><AdminContentPage /></AdminLayout>} />
         <Route path="/admin/payment-numbers" element={<AdminLayout><AdminPaymentNumbersPage /></AdminLayout>} />
+        <Route path="/admin/bank-details" element={<AdminLayout><AdminBankDetailsPage /></AdminLayout>} />
         <Route path="/admin/analytics" element={<AdminLayout><AdminAnalyticsPage /></AdminLayout>} />
         <Route path="/admin/theme" element={<AdminLayout><AdminThemePage /></AdminLayout>} />
         <Route path="/admin/settings" element={<AdminLayout><AdminSettingsPage /></AdminLayout>} />

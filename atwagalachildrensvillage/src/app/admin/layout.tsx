@@ -76,6 +76,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: 'Office Hours', href: '/admin/office-hours', icon: Settings },
     { name: 'Donations', href: '/admin/donations', icon: DollarSign },
     { name: 'Payment Numbers', href: '/admin/payment-numbers', icon: DollarSign },
+    { name: 'Bank Details', href: '/admin/bank-details', icon: DollarSign },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
     { name: 'Theme', href: '/admin/theme', icon: Palette },
     { name: 'Settings', href: '/admin/settings', icon: Settings },

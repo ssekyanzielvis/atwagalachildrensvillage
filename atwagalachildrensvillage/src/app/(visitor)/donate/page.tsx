@@ -39,6 +39,17 @@ interface PaymentNumber {
   display_order: number;
 }
 
+interface BankDetails {
+  id: string;
+  account_name: string;
+  bank_name: string;
+  account_number: string;
+  swift_code: string | null;
+  intermediate_bank: string | null;
+  is_active: boolean;
+  display_order: number;
+}
+
 // Define a type for the donation insert
 interface DonationInsert {
   donor_name: string;
@@ -58,6 +69,7 @@ export default function DonatePage() {
   const [transactionReference, setTransactionReference] = useState<string | null>(null);
   const [paymentSettings, setPaymentSettings] = useState<PaymentSettings | null>(null);
   const [paymentNumbers, setPaymentNumbers] = useState<PaymentNumber[]>([]);
+  const [bankDetails, setBankDetails] = useState<BankDetails[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   const showNotification = useAppStore((state) => state.showNotification);
 
@@ -80,6 +92,7 @@ export default function DonatePage() {
     setIsMounted(true);
     fetchPaymentSettings();
     fetchPaymentNumbers();
+    fetchBankDetails();
   }, []);
 
   const fetchPaymentSettings = async () => {
@@ -119,6 +132,22 @@ export default function DonatePage() {
       }
     } catch (error) {
       console.error('Error fetching payment numbers:', error);
+    }
+  };
+
+  const fetchBankDetails = async () => {
+    try {
+      const { data } = await supabase
+        .from('bank_details')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+
+      if (data) {
+        setBankDetails(data);
+      }
+    } catch (error) {
+      console.error('Error fetching bank details:', error);
     }
   };
 
@@ -514,8 +543,8 @@ export default function DonatePage() {
                     className="mr-3"
                   />
                   <div>
-                    <p className="font-semibold">Direct Transfer</p>
-                    <p className="text-sm text-gray-600">Send directly to number</p>
+                    <p className="font-semibold">Manual Transfer</p>
+                    <p className="text-sm text-gray-600">Mobile Money & Bank Transfer</p>
                   </div>
                 </label>
               </div>
@@ -709,20 +738,23 @@ export default function DonatePage() {
             )}
 
             {/* Manual Payment Instructions */}
-            {paymentMethod === 'manual' && paymentNumbers.length > 0 && (
+            {paymentMethod === 'manual' && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-                <h3 className="font-semibold text-lg mb-4">Payment Instructions</h3>
-                <p className="text-sm text-gray-700 mb-4">
-                  Please send your donation to any of the following numbers:
+                <h3 className="font-semibold text-lg mb-4">Manual Payment Instructions</h3>
+                <p className="text-sm text-gray-700 mb-6">
+                  You can make your donation directly through Mobile Money or via Bank Transfer using the details below.
                 </p>
-                <div className="space-y-4">
-                  {paymentNumbers.map((number) => (
-                    <div
-                      key={number.id}
-                      className="bg-white border border-yellow-300 rounded-lg p-4"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div>
+
+                {/* Mobile Money Numbers */}
+                {paymentNumbers.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="font-semibold text-gray-900 mb-3 border-b border-yellow-300 pb-1">Mobile Money Options</h4>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      {paymentNumbers.map((number) => (
+                        <div
+                          key={number.id}
+                          className="bg-white border border-yellow-300 rounded-lg p-4 shadow-sm"
+                        >
                           <p className="font-semibold text-base text-gray-900">
                             {number.network_name}
                           </p>
@@ -733,18 +765,55 @@ export default function DonatePage() {
                             Name: {number.account_name}
                           </p>
                         </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
+                )}
+
+                {/* Bank Details */}
+                {bankDetails.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3 border-b border-yellow-300 pb-1">Bank Transfer Options</h4>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {bankDetails.map((bank) => (
+                        <div key={bank.id} className="bg-white border border-yellow-300 rounded-lg p-5 shadow-sm">
+                          <h5 className="font-bold text-lg text-blue-800 mb-2">{bank.bank_name}</h5>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between border-b border-gray-100 pb-1">
+                              <span className="text-gray-500">Account Name:</span>
+                              <span className="font-semibold text-gray-900 text-right">{bank.account_name}</span>
+                            </div>
+                            <div className="flex justify-between border-b border-gray-100 pb-1">
+                              <span className="text-gray-500">Account Number:</span>
+                              <span className="font-bold text-gray-900 text-right">{bank.account_number}</span>
+                            </div>
+                            {bank.swift_code && (
+                              <div className="flex justify-between border-b border-gray-100 pb-1">
+                                <span className="text-gray-500">SWIFT Code:</span>
+                                <span className="font-semibold text-gray-900 text-right">{bank.swift_code}</span>
+                              </div>
+                            )}
+                            {bank.intermediate_bank && (
+                              <div className="flex justify-between pb-1">
+                                <span className="text-gray-500">Intermediate Bank:</span>
+                                <span className="font-semibold text-gray-900 text-right">{bank.intermediate_bank}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="text-sm text-gray-700 mt-6 p-4 bg-yellow-100 border border-yellow-300 rounded-lg">
+                  <strong>Important:</strong> After making the transfer, please complete this form by clicking "Complete Donation" below so we can properly record and acknowledge your contribution.
                 </div>
-                <p className="text-sm text-gray-700 mt-4 p-3 bg-yellow-100 rounded">
-                  <strong>Note:</strong> After making the payment, please submit this form to record your donation.
-                </p>
               </div>
             )}
 
-            {/* Fallback if no payment numbers */}
-            {paymentMethod === 'manual' && paymentNumbers.length === 0 && paymentSettings && (
+            {/* Fallback if no payment numbers and no bank details */}
+            {paymentMethod === 'manual' && paymentNumbers.length === 0 && bankDetails.length === 0 && paymentSettings && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <h3 className="font-semibold mb-2">Payment Instructions</h3>
                 <p className="text-sm text-gray-700 mb-2">
