@@ -14,4 +14,16 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
   },
+  build: {
+    chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('jspdf')) return 'jspdf';
+          if (id.includes('@supabase')) return 'supabase';
+          if (id.includes('node_modules')) return 'vendor';
+        }
+      }
+    }
+  }
 });

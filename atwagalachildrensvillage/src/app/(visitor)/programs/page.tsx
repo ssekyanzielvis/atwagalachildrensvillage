@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import ImageCard from '@/components/ImageCard';
 import TruncatedText from '@/components/TruncatedText';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { supabase } from '@/lib/supabase/client';
@@ -12,7 +11,6 @@ interface Program {
   id: string;
   image_url: string;
   title: string;
-  description: string;
   description: string;
   start_date: string | null;
   end_date: string | null;
