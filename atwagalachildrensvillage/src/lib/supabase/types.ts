@@ -2,6 +2,44 @@
 export interface Database {
   public: {
     Tables: {
+      bank_details: {
+        Row: {
+          id: string;
+          account_name: string;
+          bank_name: string;
+          account_number: string;
+          swift_code: string | null;
+          intermediate_bank: string | null;
+          is_active: boolean;
+          display_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          account_name: string;
+          bank_name: string;
+          account_number: string;
+          swift_code?: string | null;
+          intermediate_bank?: string | null;
+          is_active?: boolean;
+          display_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          account_name?: string;
+          bank_name?: string;
+          account_number?: string;
+          swift_code?: string | null;
+          intermediate_bank?: string | null;
+          is_active?: boolean;
+          display_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       admins: {
         Row: {
           id: string;

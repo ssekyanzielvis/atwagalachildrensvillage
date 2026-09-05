@@ -196,7 +196,7 @@ export default function BankDetailsPage() {
               <tr key={detail.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="font-medium text-gray-900">{detail.bank_name}</div>
-                  <div className="text-xs text-gray-500">SWIFT: {detail.swift_code || 'N/A'}</div>
+                  <div className="text-xs text-gray-500">SHIFT ADDRESS / CODE: {detail.swift_code || 'N/A'}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-gray-900">{detail.account_name}</div>
@@ -305,7 +305,7 @@ export default function BankDetailsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  SWIFT Address / Code
+                  SHIFT ADDRESS / CODE
                 </label>
                 <input
                   type="text"

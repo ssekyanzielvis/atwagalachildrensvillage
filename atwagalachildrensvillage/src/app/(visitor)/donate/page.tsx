@@ -789,7 +789,7 @@ export default function DonatePage() {
                             </div>
                             {bank.swift_code && (
                               <div className="flex justify-between border-b border-gray-100 pb-1">
-                                <span className="text-gray-500">SWIFT Code:</span>
+                                <span className="text-gray-500">SHIFT ADDRESS / CODE:</span>
                                 <span className="font-semibold text-gray-900 text-right">{bank.swift_code}</span>
                               </div>
                             )}
