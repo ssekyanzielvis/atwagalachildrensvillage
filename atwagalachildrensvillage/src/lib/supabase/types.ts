@@ -236,6 +236,7 @@ export interface Database {
           phone: string | null;
           organization_type: string | null;
           primary_focus: string | null;
+          po_box: string | null;
           updated_at: string;
         };
         Insert: {
@@ -247,6 +248,7 @@ export interface Database {
           phone?: string | null;
           organization_type?: string | null;
           primary_focus?: string | null;
+          po_box?: string | null;
           updated_at?: string;
         };
         Update: {
@@ -258,6 +260,7 @@ export interface Database {
           phone?: string | null;
           organization_type?: string | null;
           primary_focus?: string | null;
+          po_box?: string | null;
           updated_at?: string;
         };
       };

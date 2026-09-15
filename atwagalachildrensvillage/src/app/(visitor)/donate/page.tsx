@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { CreditCard, Smartphone, DollarSign } from 'lucide-react';
+import { CreditCard, Smartphone, DollarSign, QrCode } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { useAppStore } from '@/lib/store';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -15,7 +15,7 @@ const donationSchema = z.object({
   donor_email: z.string().email('Invalid email address').optional().or(z.literal('')),
   donor_phone: z.string().min(10, 'Phone number must be at least 10 characters'),
   amount: z.number().min(1000, 'Minimum donation amount is UGX 1,000'),
-  payment_method: z.enum(['mtn', 'airtel', 'card', 'manual']),
+  payment_method: z.enum(['mtn', 'airtel', 'card', 'manual', 'merchant']),
 });
 
 type DonationFormData = z.infer<typeof donationSchema>;
@@ -50,13 +50,23 @@ interface BankDetails {
   display_order: number;
 }
 
+interface MerchantCode {
+  id: string;
+  provider_name: string;
+  merchant_code: string;
+  account_name: string;
+  instructions: string | null;
+  is_active: boolean;
+  display_order: number;
+}
+
 // Define a type for the donation insert
 interface DonationInsert {
   donor_name: string;
   donor_email: string | null;
   donor_phone: string;
   amount: number;
-  payment_method: 'mtn' | 'airtel' | 'card' | 'manual';
+  payment_method: 'mtn' | 'airtel' | 'card' | 'manual' | 'merchant';
   payment_reference: string;
   receipt_number: string;
   receipt_generated: boolean;
@@ -70,6 +80,7 @@ export default function DonatePage() {
   const [paymentSettings, setPaymentSettings] = useState<PaymentSettings | null>(null);
   const [paymentNumbers, setPaymentNumbers] = useState<PaymentNumber[]>([]);
   const [bankDetails, setBankDetails] = useState<BankDetails[]>([]);
+  const [merchantCodes, setMerchantCodes] = useState<MerchantCode[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   const showNotification = useAppStore((state) => state.showNotification);
 
@@ -93,6 +104,7 @@ export default function DonatePage() {
     fetchPaymentSettings();
     fetchPaymentNumbers();
     fetchBankDetails();
+    fetchMerchantCodes();
   }, []);
 
   const fetchPaymentSettings = async () => {
@@ -148,6 +160,22 @@ export default function DonatePage() {
       }
     } catch (error) {
       console.error('Error fetching bank details:', error);
+    }
+  };
+
+  const fetchMerchantCodes = async () => {
+    try {
+      const { data } = await supabase
+        .from('merchant_codes')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+
+      if (data) {
+        setMerchantCodes(data);
+      }
+    } catch (error) {
+      console.error('Error fetching merchant codes:', error);
     }
   };
 
@@ -366,31 +394,24 @@ export default function DonatePage() {
           Your generosity helps us continue our mission to create positive change in the community.
         </p>
 
-        {/* Payment Settings Display */}
-        {paymentSettings && (
+        {/* Payment Numbers Display */}
+        {paymentNumbers.length > 0 && (
           <div className="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4 text-blue-800">Payment Numbers & Instructions</h2>
+            <h2 className="text-2xl font-bold mb-4 text-blue-800">Payment Numbers</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <h3 className="font-semibold text-lg text-yellow-700 mb-2">MTN Mobile Money</h3>
-                {paymentSettings.mtn_number ? (
-                  <>
-                    <p className="text-base text-gray-900 font-bold">Number: <span className="text-blue-700">{paymentSettings.mtn_number}</span></p>
-                    {paymentSettings.mtn_name && <p className="text-sm text-gray-700">Name: {paymentSettings.mtn_name}</p>}
-                  </>
-                ) : <p className="text-sm text-gray-500">Not configured</p>}
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg text-red-700 mb-2">Airtel Money</h3>
-                {paymentSettings.airtel_number ? (
-                  <>
-                    <p className="text-base text-gray-900 font-bold">Number: <span className="text-red-700">{paymentSettings.airtel_number}</span></p>
-                    {paymentSettings.airtel_name && <p className="text-sm text-gray-700">Name: {paymentSettings.airtel_name}</p>}
-                  </>
-                ) : <p className="text-sm text-gray-500">Not configured</p>}
-              </div>
+              {paymentNumbers.map((number) => (
+                <div key={number.id}>
+                  <h3 className="font-semibold text-lg text-yellow-700 mb-2">{number.network_name}</h3>
+                  <p className="text-base text-gray-900 font-bold">
+                    Number: <span className="text-blue-700">{number.phone_number}</span>
+                  </p>
+                  {number.account_name && (
+                    <p className="text-sm text-gray-700">Name: {number.account_name}</p>
+                  )}
+                </div>
+              ))}
             </div>
-            {paymentSettings.manual_payment_instructions && (
+            {paymentSettings?.manual_payment_instructions && (
               <div className="mt-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
                 <h4 className="font-semibold mb-2">Manual Payment Instructions</h4>
                 <p className="text-sm text-gray-800">{paymentSettings.manual_payment_instructions}</p>
@@ -545,6 +566,19 @@ export default function DonatePage() {
                   <div>
                     <p className="font-semibold">Manual Transfer</p>
                     <p className="text-sm text-gray-600">Mobile Money & Bank Transfer</p>
+                  </div>
+                </label>
+
+                <label className="relative flex items-center p-4 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                  <input
+                    {...register('payment_method')}
+                    type="radio"
+                    value="merchant"
+                    className="mr-3"
+                  />
+                  <div>
+                    <p className="font-semibold">Merchant Code</p>
+                    <p className="text-sm text-gray-600">Pay via Merchant/Till Number</p>
                   </div>
                 </label>
               </div>
@@ -847,6 +881,48 @@ export default function DonatePage() {
                 <p className="text-sm text-gray-700 mt-2">
                   After payment, submit this form to record your donation.
                 </p>
+              </div>
+            )}
+
+            {/* Merchant Code Instructions */}
+            {paymentMethod === 'merchant' && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <h3 className="font-semibold text-lg mb-4 flex items-center">
+                  <QrCode className="w-5 h-5 mr-2 text-blue-600" />
+                  Merchant Code Payment
+                </h3>
+                <p className="text-sm text-gray-700 mb-6">
+                  You can make your donation by entering one of our merchant codes in your mobile money app.
+                </p>
+
+                {merchantCodes.length > 0 ? (
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {merchantCodes.map((code) => (
+                      <div key={code.id} className="bg-white border border-blue-300 rounded-lg p-5 shadow-sm text-center">
+                        <p className="font-semibold text-gray-900 mb-1">{code.provider_name}</p>
+                        <div className="inline-block bg-blue-100 text-blue-800 text-2xl font-black tracking-widest px-4 py-2 rounded-lg mb-2">
+                          {code.merchant_code}
+                        </div>
+                        <p className="text-sm font-medium text-gray-800">{code.account_name}</p>
+                        {code.instructions && (
+                          <p className="text-xs text-gray-500 mt-3 p-2 bg-gray-50 rounded">
+                            {code.instructions}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-white border border-blue-200 rounded p-4 text-center">
+                    <p className="text-sm text-gray-600">
+                      No merchant codes are currently available. Please select a different payment method.
+                    </p>
+                  </div>
+                )}
+
+                <div className="text-sm text-gray-700 mt-6 p-4 bg-blue-100 border border-blue-300 rounded-lg">
+                  <strong>Important:</strong> After completing the payment on your phone, please submit this form by clicking "Complete Donation" below so we can record your contribution.
+                </div>
               </div>
             )}
 

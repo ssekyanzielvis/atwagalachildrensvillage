@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Package } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { useAppStore } from '@/lib/store';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -26,6 +26,7 @@ interface FooterData {
   director: string | null;
   email: string | null;
   phone: string | null;
+  po_box: string | null;
 }
 
 interface OfficeHour {
@@ -165,6 +166,15 @@ export default function ContactPage() {
                     </p>
                   </div>
                 </div>
+                {footerData?.po_box && (
+                  <div className="flex items-start space-x-4">
+                    <Package className="w-6 h-6 text-blue-600 mt-1" />
+                    <div>
+                      <h3 className="font-semibold">P.O. Box</h3>
+                      <p className="text-gray-600">{footerData.po_box}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

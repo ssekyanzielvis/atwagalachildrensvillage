@@ -22,6 +22,7 @@ import {
   BarChart3,
   UserPlus,
   ExternalLink,
+  QrCode,
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -77,6 +78,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: 'Office Hours', href: '/admin/office-hours', icon: Settings },
     { name: 'Donations', href: '/admin/donations', icon: DollarSign },
     { name: 'Payment Numbers', href: '/admin/payment-numbers', icon: DollarSign },
+    { name: 'Merchant Codes', href: '/admin/merchant-codes', icon: QrCode },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
     { name: 'Theme', href: '/admin/theme', icon: Palette },
     { name: 'Settings', href: '/admin/settings', icon: Settings },

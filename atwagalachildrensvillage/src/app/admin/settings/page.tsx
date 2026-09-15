@@ -25,6 +25,7 @@ export default function Settings() {
     phone: '',
     organization_type: '',
     primary_focus: '',
+    po_box: '',
   });
 
   // Payment Settings
@@ -56,6 +57,7 @@ export default function Settings() {
           phone: footerData.data.phone,
           organization_type: footerData.data.organization_type || '',
           primary_focus: footerData.data.primary_focus || '',
+          po_box: footerData.data.po_box || '',
         });
       }
 
@@ -235,6 +237,16 @@ export default function Settings() {
                 value={footerForm.primary_focus}
                 onChange={(e) => setFooterForm({ ...footerForm, primary_focus: e.target.value })}
                 className="w-full border rounded-lg px-3 py-2"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">P.O. Box</label>
+              <input
+                type="text"
+                value={footerForm.po_box}
+                onChange={(e) => setFooterForm({ ...footerForm, po_box: e.target.value })}
+                className="w-full border rounded-lg px-3 py-2"
+                placeholder="e.g. 100964 Iganga"
               />
             </div>
             <button

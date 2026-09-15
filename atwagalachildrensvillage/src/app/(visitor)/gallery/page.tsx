@@ -6,10 +6,10 @@ import { supabase } from '@/lib/supabase/client';
 
 interface GalleryImage {
   id: string;
-  media_url: string;
-  media_type: 'image' | 'video';
+  image_url: string;
   description: string | null;
   category: string | null;
+  is_featured: boolean;
 }
 
 export default function GalleryPage() {
@@ -109,22 +109,20 @@ export default function GalleryPage() {
               key={item.id}
               className="relative h-[500px] group overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow"
             >
-              {item.media_type === 'video' ? (
-                <video
-                  src={item.media_url}
-                  className="object-cover w-full h-full"
-                  controls
-                />
-              ) : (
-                <img
-                  src={item.media_url}
-                  alt={item.description || 'Gallery image'}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                />
-              )}
+              <img
+                src={item.image_url}
+                alt={item.description || 'Gallery image'}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                loading="lazy"
+              />
               {item.description && (
                 <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-6">
                   <p className="text-white text-center text-base md:text-lg font-medium">{item.description}</p>
+                </div>
+              )}
+              {item.is_featured && (
+                <div className="absolute top-3 left-3">
+                  <span className="bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded">Featured</span>
                 </div>
               )}
             </div>

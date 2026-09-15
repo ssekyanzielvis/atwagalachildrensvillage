@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Building2 } from 'lucide-react';
+import { Mail, Phone, MapPin, Building2, Package } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { supabase } from '@/lib/supabase/client';
 
@@ -14,6 +14,7 @@ interface FooterData {
   phone: string | null;
   organization_type: string | null;
   primary_focus: string | null;
+  po_box: string | null;
 }
 
 export default function Footer() {
@@ -108,6 +109,12 @@ export default function Footer() {
                 <div className="flex items-start space-x-2">
                   <MapPin size={18} className="mt-1 flex-shrink-0" />
                   <span className="text-sm">{footerData.location}</span>
+                </div>
+              )}
+              {footerData?.po_box && (
+                <div className="flex items-start space-x-2">
+                  <Package size={18} className="mt-1 flex-shrink-0" />
+                  <span className="text-sm">P.O. Box {footerData.po_box}</span>
                 </div>
               )}
             </div>
