@@ -37,6 +37,7 @@ import AdminOfficeHoursPage from './app/admin/office-hours/page';
 import AdminPartnersPage from './app/admin/partners/page';
 import AdminPaymentNumbersPage from './app/admin/payment-numbers/page';
 import AdminBankDetailsPage from './app/admin/bank-details/page';
+import AdminDonationsPage from './app/admin/donations/page';
 import AdminMerchantCodesPage from './app/admin/merchant-codes/page';
 import AdminProgramsPage from './app/admin/programs/page';
 import AdminProgramSponsorsPage from './app/admin/program-sponsors/page';
@@ -90,7 +91,7 @@ function App() {
         <Route path="/admin/leadership" element={<AdminLayout><AdminLeadershipPage /></AdminLayout>} />
         <Route path="/admin/contacts" element={<AdminLayout><AdminContactsPage /></AdminLayout>} />
         <Route path="/admin/office-hours" element={<AdminLayout><AdminOfficeHoursPage /></AdminLayout>} />
-        <Route path="/admin/donations" element={<AdminLayout><AdminContentPage /></AdminLayout>} />
+        <Route path="/admin/donations" element={<AdminLayout><AdminDonationsPage /></AdminLayout>} />
         <Route path="/admin/payment-numbers" element={<AdminLayout><AdminPaymentNumbersPage /></AdminLayout>} />
         <Route path="/admin/merchant-codes" element={<AdminLayout><AdminMerchantCodesPage /></AdminLayout>} />
         <Route path="/admin/bank-details" element={<AdminLayout><AdminBankDetailsPage /></AdminLayout>} />
