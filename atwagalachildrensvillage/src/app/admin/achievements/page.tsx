@@ -13,6 +13,7 @@ type Achievement = Database['public']['Tables']['achievements']['Row'];
 export default function AchievementsManagement() {
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAchievement, setEditingAchievement] = useState<Achievement | null>(null);
   const { showNotification } = useNotification();
@@ -224,7 +225,8 @@ export default function AchievementsManagement() {
               <FileUpload
                 bucket="achievements"
                 currentUrl={formData.image_url}
-                onUploadComplete={(url) => setFormData({ ...formData, image_url: url })}
+                onUploadComplete={(url) => setFormData((prev) => ({ ...prev, image_url: url }))}
+                onUploadingChange={setIsUploading}
                 accept="both"
                 label="Achievement Media (Image or Video)"
                 maxSizeMB={10}
@@ -252,10 +254,18 @@ export default function AchievementsManagement() {
               <div className="flex gap-2">
                 <button
                   type="submit"
-                  disabled={loading}
-                  className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  disabled={loading || isUploading}
+                  className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {loading ? 'Saving...' : editingAchievement ? 'Update' : 'Create'}
+                  {isUploading ? (
+                    'Uploading media...'
+                  ) : loading ? (
+                    'Saving...'
+                  ) : editingAchievement ? (
+                    'Update'
+                  ) : (
+                    'Create'
+                  )}
                 </button>
                 <button
                   type="button"

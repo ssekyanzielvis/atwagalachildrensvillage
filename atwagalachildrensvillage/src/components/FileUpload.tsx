@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { Upload, X, FileVideo, Image as ImageIcon } from 'lucide-react';
 import { useNotification } from '@/lib/store';
@@ -8,6 +8,7 @@ import { useNotification } from '@/lib/store';
 interface FileUploadProps {
   bucket: string;
   onUploadComplete: (url: string) => void;
+  onUploadingChange?: (uploading: boolean) => void;
   currentUrl?: string;
   accept?: 'image' | 'video' | 'both';
   maxSizeMB?: number;
@@ -17,6 +18,7 @@ interface FileUploadProps {
 export default function FileUpload({
   bucket,
   onUploadComplete,
+  onUploadingChange,
   currentUrl = '',
   accept = 'both',
   maxSizeMB = 10,
@@ -27,6 +29,15 @@ export default function FileUpload({
   const [fileType, setFileType] = useState<'image' | 'video' | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showNotification } = useNotification();
+
+  useEffect(() => {
+    setPreview(currentUrl || '');
+  }, [currentUrl]);
+
+  const updateUploading = (isUploading: boolean) => {
+    setUploading(isUploading);
+    onUploadingChange?.(isUploading);
+  };
 
   const getAcceptString = () => {
     if (accept === 'image') return 'image/*';
@@ -86,7 +97,7 @@ export default function FileUpload({
   };
 
   const uploadFile = async (file: File) => {
-    setUploading(true);
+    updateUploading(true);
 
     try {
       const fileExt = file.name.split('.').pop();
@@ -119,7 +130,7 @@ export default function FileUpload({
       showNotification(errorMessage, 'error');
       setPreview(currentUrl);
     } finally {
-      setUploading(false);
+      updateUploading(false);
     }
   };
 
